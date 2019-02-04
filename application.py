@@ -101,14 +101,15 @@ r=r.iloc[1:]
 r=r.drop(['Series name in IFs','SeriesName'],axis=1)
 
 
-application=dash.Dash(__name__)
+app=dash.Dash(__name__)
+application=app.server
 
 #plotly.tools.set_credentials_file(username='kanishkan91',api_key='aYeSpFRWLtq4L1a2k6VC')
 
 #fig = dict( data=data, layout=layout )
 
 
-application.layout  = html.Div([
+app.layout  = html.Div([
     dcc.Graph(id='graph-with-slider',style={'height':600}),
     dcc.Slider(id='year-slider',
         min=2010,
@@ -118,7 +119,7 @@ application.layout  = html.Div([
                )
 
 ],style={'width':'75%'})
-@application.callback(dash.dependencies.Output('graph-with-slider', 'figure'),
+@app.callback(dash.dependencies.Output('graph-with-slider', 'figure'),
     [dash.dependencies.Input('year-slider', 'value')])
    #[dash.dependencies.State('year-slider', 'marks')])
 
