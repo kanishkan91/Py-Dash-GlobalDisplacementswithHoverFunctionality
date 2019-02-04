@@ -102,7 +102,7 @@ r=r.drop(['Series name in IFs','SeriesName'],axis=1)
 
 
 app=dash.Dash(__name__)
-application=app.server
+server=app.server
 
 #plotly.tools.set_credentials_file(username='kanishkan91',api_key='aYeSpFRWLtq4L1a2k6VC')
 
