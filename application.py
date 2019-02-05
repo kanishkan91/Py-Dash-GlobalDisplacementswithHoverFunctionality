@@ -113,9 +113,9 @@ app.layout  = html.Div([
     dcc.Graph(id='graph-with-slider',style={'height':600}),
     dcc.Slider(id='year-slider',
         min=2010,
-        max=2016,
+        max=2017,
         value=2010,
-        marks={'2010':'2010','2011':'2011','2012':'2012','2013':'2013','2014':'2014','2015':'2015','2016':'2016'}
+        marks={'2010':'2010','2011':'2011','2012':'2012','2013':'2013','2014':'2014','2015':'2015','2016':'2016','2017:2017'}
                )
 
 ],style={'width':'75%'})
@@ -150,8 +150,11 @@ def update_figure(selected_year):
     )]
     layout = dict(
         title='<br>\
-                <a href="https://data.worldbank.org/indicator/VC.IDP.NWDS">\
-                Global displacement of people by conflict (using data from WDI)</a>',
+                <a href="https://data.worldbank.org/indicator/VC.IDP.TOCV">\
+                Live Dashboard showing Global displacement of people by conflict from 2010-2017 (using data from WDI)</a></br>'
+              '<i> (for code please visit my <a href="https://github.com/kanishkan91/Py-Dash-Global-Displacements">github</a> repository)</i> '
+              ''
+              ,
         geo=dict(
             showframe=False,
             showcoastlines=False,
