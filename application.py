@@ -104,22 +104,47 @@ r=r.drop(['Series name in IFs','SeriesName'],axis=1)
 app=dash.Dash(__name__)
 application=app.server
 
+styles = {
+    'pre': {
+        'border': 'thin lightgrey solid',
+
+    }
+}
+
 #plotly.tools.set_credentials_file(username='kanishkan91',api_key='aYeSpFRWLtq4L1a2k6VC')
 
 #fig = dict( data=data, layout=layout )
 
 
 app.layout  = html.Div([
-    dcc.Graph(id='graph-with-slider',style={'height':600}),
-    dcc.Slider(id='year-slider',
-        min=2010,
-        max=2017,
-        value=2010,
-        marks={'2010':'2010','2011':'2011','2012':'2012','2013':'2013','2014':'2014','2015':'2015','2016':'2016','2017':'2017'}
-               )
+    html.Div([
+    dcc.Graph(id='graph-with-slider',style={'height':600},
+              hoverData={'points': [{'customdata': 'India'}]}),
+              dcc.Slider(id='year-slider',
+                         min=2010,
+                         max=2017,
+                         value=2010,
+                         marks={'2010': '2010', '2011': '2011', '2012': '2012', '2013': '2013', '2014': '2014',
+                                '2015': '2015', '2016': '2016', '2017': '2017'}
+                         )
+],style={'width': '60%', 'float': 'left', 'display': 'inline-block'}),
 
-],style={'width':'75%'})
-@app.callback(dash.dependencies.Output('graph-with-slider', 'figure'),
+html.Div(className='row',children=[html.Div([dcc.Markdown(("""
+             '   
+                
+                
+            
+              '  
+            """)),html.Pre(id='relayout-data'),],className='three columns')]),
+
+html.Div([
+        dcc.Graph(id='conf-time-series'),
+    ], style={'display': 'inline-block', 'width': '40%','float':'right'}),
+
+])
+
+@app.callback(
+    dash.dependencies.Output('graph-with-slider', 'figure'),
     [dash.dependencies.Input('year-slider', 'value')])
    #[dash.dependencies.State('year-slider', 'marks')])
 
@@ -133,6 +158,7 @@ def update_figure(selected_year):
         locations=filtered_r['Country name in IFs'],
         z=filtered_r['Value'],
         text=filtered_r['Country'],
+        customdata=filtered_r['Country'],
         colorscale=[[0, "rgb(0, 0.5, 0.6)"], [0.25, "rgb(40, 60, 190)"], [0.50, "rgb(70, 100, 245)"], \
                     [0.55, "rgb(90, 120, 245)"], [0.7, "rgb(106, 137, 247)"], [0.85, "rgb(150,220,220)"],
                     [0.95, "rgb(175,220,220)"], [1, "rgb(220, 220, 220)"]],
@@ -145,14 +171,14 @@ def update_figure(selected_year):
             )),
         colorbar=dict(
             autotick=False,
-            ticksuffix=' people',
-            title='Displacement'),
+            ticksuffix='',
+            title='Number of people'),
     )]
     layout = dict(
         title='<br>\
                 <a href="https://data.worldbank.org/indicator/VC.IDP.TOCV">\
-                Live Dashboard showing Global displacement of people by conflict from 2010-2017 (using data from WDI)</a></br>'
-              '<i> (for code please visit my <a href="https://github.com/kanishkan91/Py-Dash-Global-Displacements">github</a> repository)</i> '
+                Live Dashboard showing global displacement of people by violence and conflict    </a></br>'
+              '<i>  (Click title for data.For code please visit my <a href="https://github.com/kanishkan91/Py-Dash-Global-Displacements">github</a> repository)</i> '
               ''
               ,
         geo=dict(
@@ -169,7 +195,47 @@ def update_figure(selected_year):
         'data':data,
         'layout':layout
 
+
     }
+
+def create_time_series(df,title):
+    return {
+        'data': [go.Scatter(
+            x=df['Year'],
+            y=df['Value'],
+            mode='lines+markers'
+        )],
+        'layout': {
+            'height': 400,
+            'margin': {'l': 20, 'b': 30, 'r': 10, 't': 10},
+            'annotations': [{
+                'x': 0, 'y': 0.93, 'xanchor': 'left', 'yanchor': 'bottom',
+                'xref': 'paper', 'yref': 'paper', 'showarrow': False,
+                'align': 'left', 'bgcolor': 'rgba(255, 255, 255, 0.5)',
+                'text': title
+
+            }],
+            'yaxis': {'type': 'linear'},
+            'xaxis': {'showgrid': False}
+        }
+    }
+
+@app.callback(
+    dash.dependencies.Output('conf-time-series','figure'),
+    [dash.dependencies.Input('graph-with-slider','hoverData')]
+)
+def update_time_series(hoverData):
+    print('DF Heads')
+    years=['2009','2010','2011','2012','2013','2014','2015','2016','2017']
+    print(hoverData['points'][0]['customdata'])
+    df=r[r['Country']==hoverData['points'][0]['customdata']]
+    df=df[df.Year.isin(years)]
+    title = '<b>{}</b><br>{}'.format('Time series of number of people displaced'," "+str(hoverData['points'][0]['customdata']))
+    print(df.head())
+
+
+    return create_time_series(df,title)
+
 
 if __name__ == '__main__':
     application.run_server(debug=True)
