@@ -116,23 +116,10 @@ styles = {
 #fig = dict( data=data, layout=layout )
 
 
-app.layout  = html.Div([html.Div(
-        [
-            dcc.Markdown(
-                '''
-                ### Live Dashboard showing global displacements of people by violence and conflict using data from WDI
-                To visit the data source click [here]("https://data.worldbank.org/indicator/VC.IDP.TOCV"). 
-                For the code, please visit my [github]("https://github.com/kanishkan91/Py-Dash-GlobalDisplacementswithHoverFunctionality") page.
-                Use the slider under the world map to change the year. Hover over different countries to see time series of data.
-                '''.replace('  ', ''),
-                className='eight columns offset-by-three'
-            )
-        ],className='row',
-        style={'text-align': 'center', 'margin-bottom': '10px'}
-    ),
+app.layout  = html.Div([
     html.Div([
-    dcc.Graph(id='graph-with-slider',style={'height':595},
-              hoverData={'points': [{'customdata': 'Syrian Arab Republic'}]}),
+    dcc.Graph(id='graph-with-slider',style={'height':600},
+              hoverData={'points': [{'customdata': 'India'}]}),
               dcc.Slider(id='year-slider',
                          min=2010,
                          max=2017,
@@ -140,7 +127,7 @@ app.layout  = html.Div([html.Div(
                          marks={'2010': '2010', '2011': '2011', '2012': '2012', '2013': '2013', '2014': '2014',
                                 '2015': '2015', '2016': '2016', '2017': '2017'}
                          )
-],style={'width': '58%', 'float': 'left', 'display': 'inline-block','font':'15','height':'60%'}),
+],style={'width': '60%', 'float': 'left', 'display': 'inline-block'}),
 
 html.Div(className='row',children=[html.Div([dcc.Markdown(("""
              '   
@@ -153,7 +140,6 @@ html.Div(className='row',children=[html.Div([dcc.Markdown(("""
 html.Div([
         dcc.Graph(id='conf-time-series'),
     ], style={'display': 'inline-block', 'width': '40%','float':'right'}),
-
 
 ])
 
@@ -189,10 +175,12 @@ def update_figure(selected_year):
             title='Number of people'),
     )]
     layout = dict(
-        annotations={'x': 1, 'y': 0.93, 'xanchor': 'left', 'yanchor': 'bottom',
-                'xref': 'paper', 'yref': 'paper', 'showarrow': False,
-                'align': 'left', 'bgcolor': 'rgba(255, 255, 255, 0.5)',
-                'text': 'Map showing global displacements'},
+        title='<br>\
+                <a href="https://data.worldbank.org/indicator/VC.IDP.TOCV">\
+                Live Dashboard showing global displacement of people by violence and conflict    </a></br>'
+              '<i>  (Click title for data.For code please visit my <a href="https://github.com/kanishkan91/Py-Dash-Global-Displacements">github</a> repository)</i> '
+              ''
+              ,
         geo=dict(
             showframe=False,
             showcoastlines=False,
@@ -200,7 +188,7 @@ def update_figure(selected_year):
             projection=dict(
                 type='Mercator'
             ),
-            resolution=400
+            resolution=200
         )
     )
     return {
